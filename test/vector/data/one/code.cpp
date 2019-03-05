@@ -114,6 +114,7 @@ void TestErase()
 	v.insert(v.begin() + 5, 200);
 	v.erase(v.begin() + 5);
 	v.erase(v.begin() + 3);
+        
 	for (sjtu::vector<int>::iterator it = v.begin(); it != v.end(); ++it) {
 		std::cout << *it << " ";
 	}

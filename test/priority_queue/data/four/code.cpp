@@ -10,7 +10,7 @@
 #include<iostream>
 #include<cctype>
 #include<utility>
-#include "priority_queue.hpp"
+#include "../../../../src/priority_queue.hpp"
 
 void TestConstructorAndPush(){
 	std::cout << "Testing constructors, destructor and push..." << std::endl;

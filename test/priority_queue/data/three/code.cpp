@@ -4,7 +4,7 @@
 #include <ctime>
 #include <cstdio>
 
-#include "priority_queue.hpp"
+#include "../../../../src/priority_queue.hpp"
 
 long long aa=13131,bb=5353,MOD=1e9+7,now=1;
 int rand()

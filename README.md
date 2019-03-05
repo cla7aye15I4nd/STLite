@@ -3,8 +3,8 @@
 
 ## TODO
 
-- [ ] vector
+- [x] vector
 - [ ] deque
 - [ ] map
-- [ ] priority_queue
+- [x] priority_queue
 
