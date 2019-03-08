@@ -90,7 +90,8 @@ namespace sakura{
     public:
         void clear() { count = 0; }
         void resize(size_type size) {
-            modify(size);
+            if (cap < size)
+                modify(size);
             count = size;
         }
         void resize(size_type size, _Tp v) {
@@ -104,6 +105,11 @@ namespace sakura{
             if (count == cap)
                 expand();
             x[count++] = v;
+        }
+        void push_front(const _Tp& v) {
+            if (count == cap)
+                expand();
+            insert(0, v);
         }
         void pop_back() {
             count--;

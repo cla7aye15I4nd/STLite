@@ -53,15 +53,15 @@ namespace sakura{
     private:
         class node{
         public:
-            node () : elem(_Tp()), head(nullptr), next(nullptr) {}
+            node () : head(nullptr), next(nullptr) {}
             node (const _Tp& elem_) : elem(elem_), head(nullptr), next(nullptr) {}
             
             friend priority_queue;
         private:
             void addChild(node* u) {
-                if (head == nullptr) {
+                if (head == nullptr) 
                     head = u;
-                } else {
+                else {
                     u->next = head;
                     head = u;
                 }
@@ -75,25 +75,36 @@ namespace sakura{
             if (u == nullptr) return v;
             if (v == nullptr) return u;
     
-            if (!Comparator () (u->elem, v->elem)) {
-                u->addChild(v);
-                return u;
-            } else {
+            if (compare(u->elem, v->elem)) {
                 v->addChild(u);
                 return v;
+            } else {
+                u->addChild(v);
+                return u;
             }
         }
 
         node* merge_pairs(node* u) {
+            // node* v = u;
+            // u = u->next;
+            // v->next = nullptr;
+            // while (u->next != nullptr) {
+            //     node *a = u->next, *b = a->next;
+            //     u->next = a->next = nullptr;
+            //     v = _merge(v, _merge(u, a));
+            //     u = b;
+            // }
+
+            // return _merge(v, u);
             if (u == nullptr) return nullptr;
             if (u->next == nullptr) return u;
-    
+            
             node *t1 = u->next, *t2 = u->next->next;
             u->next->next = nullptr;
             u->next = nullptr;
             return _merge(_merge(u, t1), merge_pairs(t2));
         }
-
+        
         void clear_(node *u) {
             if (u == nullptr) return;
             for (node *v = u->head; v; v = v->next)
@@ -105,7 +116,7 @@ namespace sakura{
             clear_(root);
             count = 0; root = nullptr;
         }
-
+        
         void copy_(node *src) {
             if (src == nullptr) return;
             push(src->elem);
@@ -119,6 +130,7 @@ namespace sakura{
         }
     
         node* root;
+        Comparator compare;
         size_type count;
     };
 }

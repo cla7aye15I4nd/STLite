@@ -7,92 +7,92 @@
 
 namespace sjtu { 
 
-template<class T>
-class deque {
-public:
+    template<class T>
+    class deque {
+    public:
 	class const_iterator;
 	class iterator {
 	private:
-		/**
-		 * TODO add data members
-		 *   just add whatever you want.
-		 */
+            /**
+             * TODO add data members
+             *   just add whatever you want.
+             */
 	public:
-		/**
-		 * return a new iterator which pointer n-next elements
-		 *   even if there are not enough elements, the behaviour is **undefined**.
-		 * as well as operator-
-		 */
-		iterator operator+(const int &n) const {
-			//TODO
-		}
-		iterator operator-(const int &n) const {
-			//TODO
-		}
-		// return th distance between two iterator,
-		// if these two iterators points to different vectors, throw invaild_iterator.
-		int operator-(const iterator &rhs) const {
-			//TODO
-		}
-		iterator operator+=(const int &n) {
-			//TODO
-		}
-		iterator operator-=(const int &n) {
-			//TODO
-		}
-		/**
-		 * TODO iter++
-		 */
-		iterator operator++(int) {}
-		/**
-		 * TODO ++iter
-		 */
-		iterator& operator++() {}
-		/**
-		 * TODO iter--
-		 */
-		iterator operator--(int) {}
-		/**
-		 * TODO --iter
-		 */
-		iterator& operator--() {}
-		/**
-		 * TODO *it
-		 */
-		T& operator*() const {}
-		/**
-		 * TODO it->field
-		 */
-		T* operator->() const noexcept {}
-		/**
-		 * a operator to check whether two iterators are same (pointing to the same memory).
-		 */
-		bool operator==(const iterator &rhs) const {}
-		bool operator==(const const_iterator &rhs) const {}
-		/**
-		 * some other operator for iterator.
-		 */
-		bool operator!=(const iterator &rhs) const {}
-		bool operator!=(const const_iterator &rhs) const {}
+            /**
+             * return a new iterator which pointer n-next elements
+             *   even if there are not enough elements, the behaviour is **undefined**.
+             * as well as operator-
+             */
+            iterator operator+(const int &n) const {
+                //TODO
+            }
+            iterator operator-(const int &n) const {
+                //TODO
+            }
+            // return th distance between two iterator,
+            // if these two iterators points to different vectors, throw invaild_iterator.
+            int operator-(const iterator &rhs) const {
+                //TODO
+            }
+            iterator operator+=(const int &n) {
+                //TODO
+            }
+            iterator operator-=(const int &n) {
+                //TODO
+            }
+            /**
+             * TODO iter++
+             */
+            iterator operator++(int) {}
+            /**
+             * TODO ++iter
+             */
+            iterator& operator++() {}
+            /**
+             * TODO iter--
+             */
+            iterator operator--(int) {}
+            /**
+             * TODO --iter
+             */
+            iterator& operator--() {}
+            /**
+             * TODO *it
+             */
+            T& operator*() const {}
+            /**
+             * TODO it->field
+             */
+            T* operator->() const noexcept {}
+            /**
+             * a operator to check whether two iterators are same (pointing to the same memory).
+             */
+            bool operator==(const iterator &rhs) const {}
+            bool operator==(const const_iterator &rhs) const {}
+            /**
+             * some other operator for iterator.
+             */
+            bool operator!=(const iterator &rhs) const {}
+            bool operator!=(const const_iterator &rhs) const {}
 	};
 	class const_iterator {
-		// it should has similar member method as iterator.
-		//  and it should be able to construct from an iterator.
-		private:
-			// data members.
-		public:
-			const_iterator() {
-				// TODO
-			}
-			const_iterator(const const_iterator &other) {
-				// TODO
-			}
-			const_iterator(const iterator &other) {
-				// TODO
-			}
-			// And other methods in iterator.
-			// And other methods in iterator.
-			// And other methods in iterator.
+            // it should has similar member method as iterator.
+            //  and it should be able to construct from an iterator.
+        private:
+            // data members.
+        public:
+            const_iterator() {
+                // TODO
+            }
+            const_iterator(const const_iterator &other) {
+                // TODO
+            }
+            const_iterator(const iterator &other) {
+                // TODO
+            }
+            // And other methods in iterator.
+            // And other methods in iterator.
+            // And other methods in iterator.
 	};
 	/**
 	 * TODO Constructors
@@ -179,7 +179,7 @@ public:
 	 *     throw when the container is empty.
 	 */
 	void pop_front() {}
-};
+    };
 
 }
 
