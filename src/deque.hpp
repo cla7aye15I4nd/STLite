@@ -3,114 +3,217 @@
 
 #include "error.hpp"
 #include "vector.hpp"
+#include <cstddef>
 
 namespace sakura{
     template <typename _Tp>
     class deque{
-        using size_type = unsigned int;
-        static const size_type BLOCK_SIZE = 1 << 10;
-        static const size_type LOW_BOUND  = BLOCK_SIZE >> 1;
-        static const size_type HIGH_BOUND = BLOCK_SIZE << 1;
-        class block;
+        class node;
+        using size_type = unsigned long;
+        using Node = node*;
         
     public:
-        deque () : head(new block()), count(0) {}
-
-        const _Tp& front() const{ return *find(0); }
-        const _Tp& back() const{ return *find(count-1); }
-        
-        block* insert(size_type index, const _Tp& value) {
-            ++count;
-            block *ptr = find_block(index);
-            ptr->insert(index, value);
-            if (ptr->size() == HIGH_BOUND)
-                ptr = split(ptr);
-            return ptr;
+        deque () : null(new node), root(null) {
+            pool.push_back(null);
+            null->left  = null;
+            null->right = null;
+            null->parent = null;
+            null->size  = 0;
         }
 
-        void erase(size_type index) {
-            --count;
-            block *ptr = find_block(index);
-            ptr->erase(index);
-            while (ptr->next != nullptr && ptr->next->size() + ptr->size() < BLOCK_SIZE)
-                merge(ptr, ptr->next);
+        virtual ~deque () { clear(); }
+        _Tp& find(size_type kth) const{
+            Node u = root;
+            while (true) {
+                if (kth <= u->left->size) u = u->left;
+                else if (kth > u->left->size + 1) {
+                    kth -= u->left->size + 1;
+                    u = u->right;
+                }
+                else return u->data;
+            }
         }
+
+        size_type size() const{ return root->size; }
+        bool empty() const{ return root == null; }
         
-        void push_back(const _Tp& value) { insert(count, value); }
-        void push_front(const _Tp& value) { insert(0, value); }
-        void pop_back() { erase(count - 1); }
-        void pop_front() { erase(0); }
+        const _Tp& front() const{ return find(1); }
+        const _Tp& back() const{ return find(root->size); }
+        
+        void pop_front() { erase(1); }
+        void pop_back() { erase(root->size); }
+        void push_front(const _Tp &data) { insert(root, 0, data); }        
+        void push_back(const _Tp &data) { insert(root, root->size, data); }
+        void insert(size_type kth, const _Tp &data) { insert(root, kth, data); }
+        void erase(size_type kth) { erase(root, kth); }
 
-        _Tp& operator [] (size_type index) { return *find(index); }
-        const _Tp& operator [] (size_type index) const{ return *find(index); }
+        _Tp& at(size_type index) { return find(index); }
+        const _Tp& at(size_type index) const{ return find(index); }
+        _Tp& operator[] (size_type index) { return find(index); }
+        const _Tp& operator[] (size_type index) const{ return find(index); }
 
-        size_type size() const{ return count; }
-        bool empty() const{ return count == 0; }
-
-    private:
-        class block : private vector<_Tp> {
+        class iterator {
         public:
-            block () : prev(nullptr), next(nullptr) {
-                this->reserve (BLOCK_SIZE);
+            iterator operator+ (const int &n) const {
+                
             }
-
-            virtual ~block() {}
             
-            bool full() const{ return this->size() == BLOCK_SIZE; }
-
-            friend deque;
-        private:
-            block *prev, *next;
-        };
-
-        void expand_front() {
-            while (head->prev != nullptr)
-                head = head->prev;
-        }
-
-        block* split(block *ptr) {
-            block *temp = new block ();
-            for (size_type i = BLOCK_SIZE; i < ptr->size(); ++i)
-                temp->push_back(ptr->at(i));
-            ptr->resize(BLOCK_SIZE);
-
-            temp->next = ptr->next;
-            temp->prev = ptr;
-
-            if (ptr->next != nullptr)
-                ptr->next->prev = temp;
-            ptr->next = temp;
-            return temp;
-        }
-
-        void merge(block *x, block *y) {
-            for (size_type i = 0; i < y->size(); ++i)
-                x->push_back(y->at(i));
-            if (y->next != nullptr)
-                y->next->prev = x;
-            x->next = y->next;
-        }
-
-        block* find_block(size_type &index) const{
-            block *ptr = head;
-            while (ptr->size() <= index && ptr->next != nullptr) {
-                index -= ptr->size();
-                ptr = ptr->next;
+            iterator operator-(const int &n) const {
             }
-            return ptr;
-        }
-        
-        _Tp* find(size_type index) const{
-            return find_block(index)->data(index);
-        }
-        
-        block *head;
-        size_type count;
-    };
-}
+            int operator-(const iterator &rhs) const {
+            }
+            iterator operator+=(const int &n) {
+            }
+            iterator operator-=(const int &n) {}
+            iterator operator++(int) {}
+            iterator& operator++() {}
+            iterator operator--(int) {}
+            iterator& operator--() {}
+            T& operator*() const {}
+            T* operator->() const noexcept {}
 
-namespace sjtu{
-    using namespace sakura;
+            bool operator==(const iterator &rhs) const {}
+            bool operator==(const const_iterator &rhs) const {}
+            bool operator!=(const iterator &rhs) const {}
+            bool operator!=(const const_iterator &rhs) const {}
+        private:
+            Node ptr;
+        };
+        
+    private:
+        void insert(Node &h, size_type kth, const _Tp &data) {
+            if (h == null) h = newNode(data);
+            else {
+                h->size ++;
+                if (h->left->size < kth) {
+                    insert(h->right, kth - h->left->size - 1, data);
+                    fixUpRight(h);
+                } else {
+                    insert(h->left, kth, data);
+                    fixUpLeft(h);
+                }
+            }
+        }
+
+        void erase(Node &h, size_type kth) {
+            h->size--;
+            if (h->left->size >= kth) return erase(h->left, kth);
+            if (kth > h->left->size + 1) return erase(h->right, kth-h->left->size-1);
+
+            if (h->right == null) h = h->left;
+            else if (h->left == null) h = h->right;
+            else if (h->right->left == null) {
+                h = h->right;
+                h->size += h->left->size;
+            }else {
+                Node u = h->right;
+                while (u->left->left != null) {
+                    u->size--;
+                    u = u->left;
+                }
+
+                u->left->size = h->size;
+                h = u->left;
+                u->size--;
+                u->left = null;
+            }
+        }
+        
+        Node newNode(const _Tp &data) {
+            Node h = new node;
+            h->left  = null;
+            h->right = null;
+            h->data  = data;
+            h->size  = 1;
+            pool.push_back(h);
+            return h;
+        }
+        
+        void rotateLeft(Node &h) {
+            Node x = h->right;
+            h->right = x->left;
+            x->left = h;            
+            x->size = h->size;
+            h->size = h->left->size + h->right->size + 1;
+            h = x;
+        }
+        
+        void rotateRight(Node &h) {
+            Node x = h->left;
+            h->left = x->right;
+            x->right = h;
+            x->size = h->size;
+            h->size = h->left->size + h->right->size + 1;
+            h = x;
+        }
+        
+        bool fixLeft(Node& h) {
+            if (h->left->left->size > h->right->size) {
+                rotateRight(h);
+                return true;
+            }
+            if (h->left->right->size > h->right->size) {
+                rotateLeft(h->left);
+                rotateRight(h);
+                return true;
+            }
+            return false;
+        }
+        
+        bool fixRight(Node& h) {
+            if (h->right->right->size > h->left->size) {
+                rotateLeft(h);
+                return true;
+            }
+            if (h->right->left->size > h->left->size) {
+                rotateRight(h->right);
+                rotateLeft(h);
+                return true;
+            }
+            return false;
+        }
+
+        void fixUpLeft(Node &h) {
+            if (h == null) return;
+            if (fixLeft(h))
+                fixUp(h);
+        }
+
+        void fixUpRight(Node &h) {
+            if (h == null) return;
+            if (fixRight(h))
+                fixUp(h);
+        }
+
+        void fixUp(Node &h) {
+            fixUpLeft(h->left);
+            fixUpRight(h->right);
+            fixUpLeft(h);
+            fixUpRight(h);
+        }
+
+        void clear() {
+            for (auto u : pool)
+                delete u;
+        }
+
+        size_type rank(Node u) {
+            size_type retval = 1 + u->left->size;
+            
+        }
+
+        vector<Node> pool;
+        Node null, root;
+        
+        class node{
+        public:
+            _Tp data;
+        private:
+            size_type size;
+            Node left, right, parent;
+            friend deque;
+        };
+    };        
 }
 
 #endif
