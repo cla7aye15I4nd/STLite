@@ -22,34 +22,24 @@ namespace sakura{
 #define key first
 #define value second
         
-        map () : root(nullptr) {}
+        map () : root(nullptr), counter(0) {}
         ~map () { clear(); }
-        
-        void insert(Key key, Value value) {
-            ++count;
-            root = insert(root, key, value);
-            root->color = BLACK;
-        }
-        
-        void erase(Key key) {
-            --count;
-            root = erase(root, key);
-            if (root != nullptr) root->color = BLACK;
-        }
 
-        Value& at(const Key &key) { return find(key)->o.value; }
-	const Value& at(const Key &key) const { return find(key)->o.value; }
-        Value& operator [] (Key key) { return find(key)->o.value; }
-        const Value& operator [] (Key key) const{ return find(key)->o.value; }
+        Value& at(const Key &key) { return get(key)->o.value; }
+	const Value& at(const Key &key) const { return get(key)->o.value; }
+        Value& operator [] (Key key) { return get(key)->o.value; }
+        const Value& operator [] (Key key) const{ return get(key)->o.value; }
 
         class const_iterator;
         class iterator{
         public:
             iterator() = default;
+            iterator(map *id, Node x) : id(id), x(x) {}
             iterator(const iterator &it) : id(it.id), x(it.x) {}
-            
+
+            iterator& operator= (const iterator &it) { x = it.x; return *this; }
             iterator& operator++() { x = id->succ(x->o.key); return *this; }
-            iterator& operator--() { x = x == nullptr ? id->max(id->root) : id->prev(x->o.key); return *this; }
+            iterator& operator--() { x = (x == nullptr ? id->max(id->root) : id->prev(x->o.key)); return *this; }
             iterator operator++ (int) {
                 iterator temp = *this;
                 operator++ ();
@@ -70,22 +60,41 @@ namespace sakura{
         private:
             const map* id;
             Node x;
+            friend map;
         };
 
-        class const_iterator {
+        class const_iterator : public iterator{
         public:
             const_iterator() = default;
-            const_iterator(const const_iterator &it) : id(it.id), x(it.x) {}
-            const_iterator(const iterator &it) : id(it.id), x(it.x) {}
-        private:
-            const map* id;
-            const Node x;
-	};
+            const_iterator(map *id, Node x) : iterator(id, x) {}
+            const_iterator(const const_iterator &it) : iterator(it) {}
+        };
 
-        bool empty() const{ return count == 0; }
-        size_type size() const{ return count; }
+        pair<iterator, bool> insert(const value_type &o) {
+            temp = nullptr;
+            root = _insert(root, o.key, o.value);
+            counter += temp != nullptr;
+            return pair<iterator, bool>(iterator(this, temp), temp != nullptr);
+        }
+        
+        void erase(iterator it) {
+            root = _erase(root, it.x->o.key);
+            if (root != nullptr) root->color = BLACK;
+        }
+
+        size_t count(const Key &key) const{ return _get(key) == nullptr; }
+        iterator find(const Key &key) { return iterator(this, _get(key)); }
+	const_iterator find(const Key &key) const { return const_iterator(this, _get(key)); }
+
+        bool empty() const{ return counter == 0; }
+        size_type size() const{ return counter; }
         
         void clear() { clear(root); }
+
+        iterator begin() { return iterator(this, min(root)); }
+        iterator end()   { return iterator(this, nullptr); }
+        const_iterator cbegin() { return const_iterator(this, min(root)); }
+        const_iterator cend()   { return const_iterator(this, nullptr); }
         
     private:
         bool isRed(Node x)   const{ return x != nullptr && x->color == RED; }
@@ -124,23 +133,22 @@ namespace sakura{
             return h;
         }
         
-        Node insert(Node x, const Key& key, const Value& val) {
+        Node _insert(Node x, const Key& key, const Value& val) {
             if (x == nullptr) return temp = newNode(key, val, RED);
-
-            if      (comp(key, x->o.key)) x->left  = insert(x->left,  key, val);
-            else if (comp(x->o.key, key)) x->right = insert(x->right, key, val);
-            
+            if      (comp(key, x->o.key)) x->left  = _insert(x->left,  key, val);
+            else if (comp(x->o.key, key)) x->right = _insert(x->right, key, val);
             return fixUp(x);
         }
 
-        Node erase(Node x, const Key& key) const{
+        Node _erase(Node x, const Key& key) {
             if (comp(key, x->o.key)) {
                 if (isBlack(x->left) && !isRed(x->left->left)) x = moveRedLeft(x);
-                x->left = erase(x->left, key);
+                x->left = _erase(x->left, key);
             } else {
                 if (isRed(x->left)) x = rotateRight(x);
                 if (isBlack(x->right) && !isRed(x->right->left)) x = moveRedRight(x);
                 if (compare(key, x->o.key) == 0) {
+                    --counter;
                     if (x->right == nullptr) return nullptr;
                     else {
                         Node h = min(x->right);
@@ -149,7 +157,7 @@ namespace sakura{
                         x->right = eraseMin(x->right);
                     }
                 }
-                else x->right = erase(x->right, key);
+                else x->right = _erase(x->right, key);
             }
             
             return fixUp(x);
@@ -199,7 +207,7 @@ namespace sakura{
 
         Node prev(Node x, const Key& key) const{
             if (x == nullptr) return x;
-            if (comp(x->key, key)) {
+            if (comp(x->o.key, key)) {
                 Node h = prev(x->right, key);
                 return h == nullptr ? x: h;
             }
@@ -208,7 +216,7 @@ namespace sakura{
 
         Node succ(Node x, const Key& key) const{
             if (x == nullptr) return x;
-            if (comp(key, x->key)) {
+            if (comp(key, x->o.key)) {
                 Node h = prev(x->left, key);
                 return h == nullptr ? x: h;
             }
@@ -218,7 +226,7 @@ namespace sakura{
         Node succ(const Key& key) const{ return succ(root, key); }
         Node prev(const Key& key) const{ return prev(root, key); }
 
-        Node _find(const Key& key) const{
+        Node _get(const Key& key) const{
             Node x = root;
             while (x != nullptr) {
                 int cmp = compare(key, x->o.key);
@@ -229,9 +237,9 @@ namespace sakura{
             return nullptr;
         }
 
-        Node find(const Key& key) {
-            Node x = _find(key);
-            return x == nullptr ? insert(key, Value()), _find(key): x;
+        Node get(const Key& key) {
+            Node x = _get(key);
+            return x == nullptr ? _insert(root, key, root->o.value), _get(key): x;
         }
 
         void clear(Node x) {
@@ -255,9 +263,11 @@ namespace sakura{
 
         
         Node root, temp;
-        size_type count;
+        size_type counter;
         Comparator comp;
         friend iterator;
+        #undef key
+        #undef value
     };
 }
 
