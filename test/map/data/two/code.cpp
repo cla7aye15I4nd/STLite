@@ -10,7 +10,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <algorithm>
-#include "map.hpp"
+#include "../../../../src/map.hpp"
 
 using namespace std;
 
@@ -416,7 +416,7 @@ bool check10(){//class writen by users
 }
 
 bool check11(){
-	sjtu::map<string, int> Q;
+    sjtu::map<string, int> Q;
 	sjtu::map<string, int> :: iterator kit;
 	kit = Q.begin();
 	Q["aa"] = 5;

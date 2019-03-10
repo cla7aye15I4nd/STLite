@@ -42,4 +42,8 @@ namespace sakura{
     };
 }
 
+namespace sjtu{
+    using namespace sakura;
+}
+
 #endif

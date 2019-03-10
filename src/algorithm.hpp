@@ -24,9 +24,8 @@ namespace sakura{
 	T1 first;
 	T2 second;
 
+        constexpr pair() : first(), second() {}
         pair(const pair &other) = default;
-	constexpr pair() : first(), second() {}
-	
 	pair(pair &&other) = default;
         
 	pair(const T1 &x, const T2 &y) : first(x), second(y) {}
@@ -39,6 +38,8 @@ namespace sakura{
         
 	template<class U1, class U2>
 	pair(pair<U1, U2> &&other) : first(other.first), second(other.second) {}
+
+        ~pair() {}
     };
 } // namespace sakura
 

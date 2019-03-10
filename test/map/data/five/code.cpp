@@ -8,7 +8,7 @@
 #include<cstdlib>
 #include<cstring>
 #include<algorithm>
-#include "map.hpp"
+#include "../../../../src/map.hpp"
 
 using namespace std;
 
@@ -462,7 +462,7 @@ bool check11(){
 }
 
 bool check12(){ // erase(it++)
-	sjtu::map<int, int> Q;
+    sjtu::map<int, int> Q;
 	std::map<int, int> stdQ;
 	int num[30001];
 	num[0] = 0;
@@ -477,13 +477,16 @@ bool check12(){ // erase(it++)
 	std::map<int, int>::iterator stdit;
 	for(int i = 1; i <= 60000; i++) swap(num[rand() % 30000 + 1], num[rand() % 30000 + 1]);
 	for(int i = 1; i <= 10325; i++){
-		it = Q.find(num[i]); Q.erase(it++);
-		stdit = stdQ.find(num[i]); stdQ.erase(stdit++);
+		it = Q.find(num[i]);
+                Q.erase(it++);
+		stdit = stdQ.find(num[i]);
+                stdQ.erase(stdit++);
 		if(it == Q.end()){
 			if(stdit != stdQ.end()) return 0;
 		}
 		else{
-			if(it -> first != stdit -> first) return 0;
+			if(it -> first != stdit -> first)
+                            return 0;
 		}
 	}	
 	if(Q.size() != stdQ.size()) return 0;
@@ -601,7 +604,8 @@ void easy_test(){
 
 int main(){
 	//freopen("testans_advance.out", "w", stdout);
-	srand(time(NULL));
+    //srand(time(NULL));
+    srand(1);
 	easy_test();
 	if(!check1()) cout << "Test 1 Failed......" << endl; else cout << "Test 1 Passed!" << endl;
 	if(!check2()) cout << "Test 2 Failed......" << endl; else cout << "Test 2 Passed!" << endl;

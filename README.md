@@ -5,6 +5,6 @@
 
 - [x] vector
 - [ ] deque
-- [ ] map
+- [x] map
 - [x] priority_queue
 

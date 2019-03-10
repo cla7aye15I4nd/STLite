@@ -13,7 +13,7 @@ public:
 	}
 
 	Integer(const Integer &rhs) {
-		val = rhs.val;
+            val = rhs.val;
 		counter++;
 	}
 
@@ -23,6 +23,7 @@ public:
 
 	~Integer() {
 		counter--;
+
 	}
 };
 
@@ -61,12 +62,19 @@ void tester(void) {
 		if (i > 1896 && i <= 2016) {
 			continue;
 		}
+                if (i == 2017) {
+                    ++i; --i;
+                }
 		assert(map.count(Integer(i)) == 1);
 		assert(map.find(Integer(i)) != map.end());
 		map.erase(map.find(Integer(i)));
+                //std::cerr << i << " ";
 	}
+        std::cerr << Integer::counter << std::endl;
+
 	//	test: constructor, operator=, clear();
-	for (int i = 0; i < (int)map.size(); ++i) {
+
+        for (int i = 0; i < (int)map.size(); ++i) {
 		sjtu::map<Integer, std::string, Compare> copy(map);
 		map.clear();
 		std::cout << map.size() << " " << copy.size() << " ";
@@ -80,9 +88,10 @@ void tester(void) {
 		copy.clear();
 		std::cout << map.size() << " " << copy.size() << " ";
 	}
+        
 	std::cout << std::endl;
 	//	test: const_iterator, cbegin(), cend(), operator++, at()
-	sjtu::map<Integer, std::string, Compare>::const_iterator const_iterator;
+        sjtu::map<Integer, std::string, Compare>::const_iterator const_iterator;
 	const_iterator = map.cbegin();
 	while (const_iterator != map.cend()) {
 		const Integer integer(const_iterator->first);
@@ -101,10 +110,12 @@ void tester(void) {
 		}
 		std::cout << (--iterator)->second << " ";
 	}
-	//	test: erase()
+        
+        //	test: erase()
 	while (map.begin() != map.end()) {
 		map.erase(map.begin());
 	}
+        
 	assert(map.empty() && map.size() == 0);
 	//	test: operator[]
 	for (int i = 0; i < 100000; ++i) {
