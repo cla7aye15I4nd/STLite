@@ -8,7 +8,7 @@
 #include<cstdlib>
 #include<cstring>
 #include<algorithm>
-#include "../../../../src/map.hpp"
+#include "../map.hpp"
 
 using namespace std;
 
@@ -472,7 +472,7 @@ bool check12(){ // erase(it++)
 		int t = rand();
 		stdQ[num[i]] = t; Q[num[i]] = t;
 	}
-	
+
 	sjtu::map<int, int>::iterator it;
 	std::map<int, int>::iterator stdit;
 	for(int i = 1; i <= 60000; i++) swap(num[rand() % 30000 + 1], num[rand() % 30000 + 1]);
@@ -488,7 +488,7 @@ bool check12(){ // erase(it++)
 			if(it -> first != stdit -> first)
                             return 0;
 		}
-	}	
+	}
 	if(Q.size() != stdQ.size()) return 0;
 	it = Q.begin();
 	for(stdit = stdQ.begin(); stdit != stdQ.end(); stdit++){ 

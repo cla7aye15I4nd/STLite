@@ -6,7 +6,7 @@
 #include <map>
 #include <ctime>
 //#include "exceptions.hpp"
-#include "../../../../src/map.hpp"
+#include "..//map.hpp"
 
 const int MAXN = 10001;
 
@@ -477,11 +477,14 @@ void tester10() {
             srcmap.insert(sjtu::map<IntA, IntB, Compare>::value_type(x, tmp));
             console.showProgress();
         }
+
         std::map<IntA, IntB, Compare> std1(stdmap), std2;
         std2 = std1 = std1;
         sjtu::map<IntA, IntB, Compare> src1(srcmap), src2;
         src2 = src1 = src1;
+        //return;
         //std::cerr << "#" << std1.size() << ' ' << src1.size() << '\n';
+
         for (int i = 0; i < (int)ret.size(); i++) {
             if (stdmap.find(ret[i]) != stdmap.end()) {
                 srcmap.erase(srcmap.find(ret[i]));
@@ -489,6 +492,7 @@ void tester10() {
             }
             console.showProgress();
         }
+
         ret = generator(MAXN);
         for (int i = 0; i < (int)ret.size(); i++) {
             auto x = ret[i];

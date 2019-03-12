@@ -206,6 +206,7 @@ namespace sakura{
                     }else {
                         Node h = min(x->right);
                         memcpy(&x->key, &h->key, sizeof(Key));
+                        x->value.~Value();
                         new(&x->value) Value(h->value);
                         x->right = eraseMin(x->right);
                     }
@@ -312,6 +313,7 @@ namespace sakura{
             Value value;
             node(Key key, Value value, bool color) : key(key), value(value), color(color), left(nullptr), right(nullptr) {}
             node(Key key, bool color) : key(key), color(color), left(nullptr), right(nullptr) {}
+            ~node() {}
             
         private:
             bool color;

@@ -6,10 +6,10 @@
 #include <deque>
 #include <random>
 
-#include "class-integer.hpp"
-#include "class-matrix.hpp"
-#include "class-bint.hpp"
-#include "deque.hpp"
+#include "../class-integer.hpp"
+#include "../class-matrix.hpp"
+#include "../class-bint.hpp"
+#include "../../../../src/deque.hpp"
 
 std::default_random_engine randnum(time(NULL));
 
@@ -89,7 +89,6 @@ bool popTest() {
 bool insertTest() {
     std::deque<int> ans, ans2, ans3;
     sjtu::deque<int> deq, deq2, deq3;
-
     for (int i = 0; i < 100; i++) {
         int x = randnum();
         int pos = (ans.size() == 0 ? 0 : randnum() % ans.size());
