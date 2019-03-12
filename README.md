@@ -4,7 +4,7 @@
 ## TODO
 
 - [x] vector
-- [ ] deque
+- [x] deque
 - [x] map
 - [x] priority_queue
 

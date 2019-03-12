@@ -10,6 +10,6 @@ Test 8 Passed!
 Test 9 Passed!
 Test 10 Passed!
 Test 11 Passed!
-Test 12 Failed......
-Test 13 Failed......
+Test 12 Passed!
+Test 13 Passed!
 Test 14 Passed!

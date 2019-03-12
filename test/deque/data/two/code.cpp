@@ -132,7 +132,6 @@ bool iteratorTest() {
         if (*ansIter != *myIter)
             return false;
     }
-
     // iter += n,  iter -= n
     for (int i = 0; i < MAX_N; i++) {
         std::deque<int>::iterator ansIter[] = { ans.begin(), ans.end() };
@@ -142,7 +141,6 @@ bool iteratorTest() {
 
         ansIter[0] += offset; ansIter[1] -= offset;
         myIter[0]  += offset; myIter[1]  -= offset;
-
         for (int j = 0; j < 2; j++)
             if (*ansIter[j] != *myIter[j])
                 return false;
@@ -150,7 +148,7 @@ bool iteratorTest() {
         if (ansIter[1] - ansIter[0] != myIter[1] - myIter[0])
             return false;
     }
-
+    
     // iter +=n, iter -= n, iter += -n, iter -= -n
     int index = ans.size() / 2;
     ansIter = ans.begin() + index;
@@ -429,7 +427,7 @@ bool nomercyTest() {
         randnumFill(ans, deq, 100000);
         if (!dfs(19960904, ans, deq))
             return false;
-
+        
         std::deque<DynamicType> ans2;
         sjtu::deque<DynamicType> deq2;
         for (int i = 0; i < 10000; i++) {

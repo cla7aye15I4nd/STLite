@@ -1,10 +1,9 @@
 #ifndef _vector_hpp
 #define _vector_hpp
 
-#include "algorithm.hpp"
-#include "error.hpp"
+#include "exceptions.hpp"
 
-namespace sakura{
+namespace sjtu{
 #define INDEX_ERROR_HANDLER if (index < 0 || index >= count) throw("access denied in");
     template <typename _Tp>
     class vector{

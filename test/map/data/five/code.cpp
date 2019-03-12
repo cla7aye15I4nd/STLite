@@ -8,7 +8,7 @@
 #include<cstdlib>
 #include<cstring>
 #include<algorithm>
-#include "../map.hpp"
+#include "../../../../src/map.hpp"
 
 using namespace std;
 
