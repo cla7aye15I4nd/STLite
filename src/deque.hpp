@@ -12,8 +12,9 @@ namespace sjtu{
 #define HEAD s.head->next
 #define TAIL s.tail->prev
 #define END  s.tail
-        static const size_t BOUND = 700;
-	static const size_t LIMIT = BOUND / 2;
+        static const size_t SIZE = 300;
+        static const size_t BOUND = SIZE * 2;
+	static const size_t LIMIT = SIZE / 2;
  
         template <typename __Tp>
         class list{
@@ -91,7 +92,7 @@ namespace sjtu{
                 u->prev->next = temp;
                 u->prev = temp;
             }
- 
+            
             void insert(Node u, __Tp *data) {
                 ++count;
                 Node temp = new node (u->prev, u, data);
@@ -110,16 +111,12 @@ namespace sjtu{
             const __Tp& back()  const{ return *tail->prev->data; }
             
             void _erase_tail() {
-                if (tail != nullptr) {
+                if (tail != nullptr) 
                     delete tail;
-                    tail = nullptr;
-                }
             }
             void _erase_head() {
-                if (head != nullptr) {
+                if (head != nullptr) 
                     delete head;
-                    head = nullptr;
-                }
             }
         
             void merge(list *u) {
@@ -270,6 +267,7 @@ namespace sjtu{
                     if (rhs.id->data->count == 0 || id->data->count == 0) return true;
                     return id == rhs.id && elem == rhs.elem;
                 }
+                return false;
             }
             bool operator!= (const iterator &rhs) const { return  !(*this == rhs); }
             
@@ -331,111 +329,7 @@ namespace sjtu{
             friend deque;
         };
  
-        class const_iterator{
-        public:
-            const_iterator () {}
-            const_iterator operator+ (int n) {
-                if (n < 0) return operator- (-n);
-                int r = rest();
-                if (r >= n) move_back_ptr(n);
-                else {
-                    id = id->next;
-                    move_back_ptr(move_back_block(n - r));
-                }
-                return *this;
-            }
-            const_iterator operator- (int n) {
-                if (n < 0) return operator+ (-n);
-                if (index_ptr() <= n) throw invalid_iterator();
-                int r = index() - 1;
-                if (r >= n) move_front_ptr(n);
-                else {
-                    id = id->prev;
-                    move_front_ptr(move_front_block(n - r));
-                }
-                return *this;
-            }
-            const_iterator operator+= (int n) { return *this = *this + n; }
-            const_iterator operator-= (int n) { return *this = *this - n; }
-            const_iterator operator++ () { return operator+ (1); }
-            const_iterator operator-- () { return operator- (1); }
-            const_iterator operator++ (int) {
-                const_iterator temp = *this;
-                operator++();
-                return temp;
-            }
-            const_iterator operator-- (int) {
-                const_iterator temp = *this;
-                operator--();
-                return temp;
-            }
- 
-            int operator- (const const_iterator& rhs) { return index_ptr() - rhs.index_ptr(); }
- 
-            bool operator== (const const_iterator &rhs) const {
-                if (rhs.id->data->count == 0 || id->data->count == 0) return true;
-                return id == rhs.id && elem == rhs.elem;
-            }
-            bool operator!= (const const_iterator &rhs) const { return  !(*this == rhs); }
-            
-            _Tp& operator*()  const {
-                if (id->next == nullptr) throw index_out_of_bound();
-                return *(elem->data);
-            }
-            _Tp* operator->() const { return elem->data; }
-            
-        private:
-            const_iterator (const deque* _pid, List _id, Elem _elem) : pid(_pid), id(_id), elem(_elem) {}
- 
-            int index() const{
-                Elem x = id->data->head;
-                int retval = 0;
-                while (x != elem) {
-                    x = x->next;
-                    retval++;
-                }
-                return retval;
-            }
-            int rest() const{ return id->data->count - index(); }
-            void move_back_ptr(int shift) {
-                while (elem->next != nullptr && shift--) elem = elem->next;
-                if (elem->next == nullptr && shift) throw invalid_iterator();
-            }
-            size_t move_back_block(size_t shift) {
-                if (id == nullptr)  throw invalid_iterator();
-                while (id->next != nullptr && shift > id->data->count) {
-                    shift -= id->data->count;
-                    id = id->next;
-                }
-                elem = id->data->head;
-                return shift;
-            }
-            void move_front_ptr(size_t shift) { while (shift--) elem = elem->prev; }
-            size_t move_front_block(size_t shift) {
-                while (shift > id->data->count) {
-                    shift -= id->data->count;
-                    id = id->prev;
-                }
-                elem = id->data->tail;
-                return shift;
-            }
-            int index_ptr() const{
-                auto tid = id;
-                int retval = -rest();
-                while (tid->data != nullptr) {
-                    retval += tid->data->count;
-                    tid = tid->prev;
-                }
-                return retval;
-            }
- 
- 
-            const deque* pid;
-            List id;
-            Elem elem;
-            friend deque;
-        };
- 
+        using const_iterator = iterator;
  
         iterator begin() const{ return iterator(this, HEAD, HEAD->data->head->next); }
         iterator end()   const{ return iterator(this, END, END->data->tail); }
@@ -447,10 +341,13 @@ namespace sjtu{
             if (pos == end())
                 pos = iterator(this, TAIL, TAIL->data->tail);
             ++count;
-            size_t index = pos.index_ptr();
+            size_t index = pos.index();
             pos.id->data->insert(pos.elem - 0, data);
-            maintain(pos.id);
-            return begin() + index - 1;
+            if (pos.id->data->count >= BOUND) {
+                s.insert(pos.id->next, pos.id->data->split(SIZE));    
+                return iterator(this, pos.id, pos.id->data->head->next) + (index - 1);
+            }
+            return pos - 1;
         }
  
         iterator erase(iterator pos) {
@@ -490,13 +387,13 @@ namespace sjtu{
     private:
         void maintain(List x) {
             if (x->data->count >= BOUND) {
-                s.insert(x->next, x->data->split(LIMIT));
+                s.insert(x->next, x->data->split(SIZE));
             }else if (x->prev != s.head || x->next != END) {
-                while (x->next != END && x->data->count + x->next->data->count <= BOUND) {
+                while (x->next != END && (x->data->count == 0 || x->data->count + x->next->data->count <= BOUND)) {
                     x->data->merge(x->next->data);
                     s.erase(x->next);
                 }
-                while (x->prev != s.head && x->data->count + x->prev->data->count <= BOUND) {
+                while (x->prev != s.head && (x->data->count == 0 || x->data->count + x->prev->data->count <= BOUND)) {
                     x = x->prev;
                     x->data->merge(x->next->data);
                     s.erase(x->next);
