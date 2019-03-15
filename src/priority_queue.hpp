@@ -1,10 +1,10 @@
 #ifndef _priority_queue_hpp
 #define _priority_queue_hpp
 
-#include "error.hpp"
+#include "exceptions.hpp"
 #include <functional>
 
-namespace sakura{
+namespace sjtu{
     template <typename _Tp, class Comparator = std::less<_Tp>>
     class priority_queue{
         using size_type = unsigned long;
@@ -34,9 +34,11 @@ namespace sakura{
         }
 
         void pop() {
-            if (count == 0) throw container_is_empty("pop");
+            if (count == 0) throw container_is_empty();
             --count;
+            node* temp = root;
             root = merge_pairs(root->head);
+            delete temp;
         }
 
         bool empty() const{
@@ -46,7 +48,7 @@ namespace sakura{
             return count;
         }
         const _Tp& top() const{
-            if (count == 0) throw container_is_empty("top");
+            if (count == 0) throw container_is_empty();
             return root->elem;
         }
   
@@ -55,6 +57,7 @@ namespace sakura{
         public:
             node () : head(nullptr), next(nullptr) {}
             node (const _Tp& elem_) : elem(elem_), head(nullptr), next(nullptr) {}
+            virtual ~node () {}
             
             friend priority_queue;
         private:
@@ -133,10 +136,6 @@ namespace sakura{
         Comparator compare;
         size_type count;
     };
-}
-
-namespace sjtu{
-    using namespace sakura;
 }
 
 #endif

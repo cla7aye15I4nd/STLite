@@ -1,3 +1,4 @@
+//#pragma GCC optimize(3)
 #ifndef _map_hpp
 #define _map_hpp
 
@@ -274,7 +275,6 @@ namespace sjtu{
             erase(it - this->begin());
         }
         
-        
         _Tp* data(size_type index = 0) { return x + index; }
         
     }; // class vector
@@ -334,11 +334,11 @@ namespace sjtu{
             }
             iterator& operator++() {
                 if (x == nullptr) throw invalid_iterator();
-                x = id->succ(x->key);
+                x = x->succ;
                 return *this;
             }
             iterator& operator--() {
-                x = (x == nullptr ? id->max(id->root) : id->prev(x->key));
+                x = (x == nullptr ? id->max(id->root) : x->prev);
                 if (x == nullptr) throw invalid_iterator();
                 return *this;
             }
@@ -376,13 +376,25 @@ namespace sjtu{
         pair<iterator, bool> insert(const value_type &o) {
             size_type c = counter;
             root = _insert(root, o.key, o.value);
+            if (counter - c) {
+                auto pre = prev(o.key);
+                auto suc = succ(o.key);
+                temp->prev = pre; temp->succ = suc;
+                if (pre) pre->succ = temp;
+                if (suc) suc->prev = temp;
+            }
             return pair<iterator, bool>(iterator(this, temp), counter - c);
         }
         
         void erase(const iterator &it) {
             if (it.x == nullptr || it.id != this || _get(it.x->key) == nullptr)
                 throw invalid_iterator();
+            auto k = it.x->key;
             root = _erase(root, it.x->key);
+            auto pre = prev(k);
+            auto suc = succ(k);
+            if (pre != nullptr) pre->succ = suc;
+            if (suc != nullptr) suc->prev = pre;
             if (root != nullptr) root->color = BLACK;
         }
 
@@ -475,12 +487,15 @@ namespace sjtu{
                 if (compare(key, x->key) == 0) {
                     --counter;
                     if (x->right == nullptr) {
-                        return nullptr;
+                        return temp = nullptr;
                     }else {
-                        Node h = min(x->right);
+                        Node h = min(x->right); 
                         memcpy(&x->key, &h->key, sizeof(Key));
                         x->value.~Value();
                         new(&x->value) Value(h->value);
+                        x->prev = h->prev;
+                        x->succ = h->succ;
+                        if (h->succ != nullptr) h->succ->prev = x;
                         x->right = eraseMin(x->right);
                     }
                 }
@@ -569,6 +584,11 @@ namespace sjtu{
             if (x == nullptr) {
                 ++counter;
                 root = _insert(root, key);
+                auto pre = prev(key);
+                auto suc = succ(key);
+                temp->prev = pre; temp->succ = suc;
+                if (pre) pre->succ = temp;
+                if (suc) suc->prev = temp;
                 return temp;
             }
             else return x;
@@ -584,13 +604,14 @@ namespace sjtu{
         public:
             Key key;
             Value value;
-            node(Key key, Value value, bool color) : key(key), value(value), color(color), left(nullptr), right(nullptr) {}
-            node(Key key, bool color) : key(key), color(color), left(nullptr), right(nullptr) {}
+            node(Key key, Value value, bool color) : key(key), value(value), color(color), left(nullptr), right(nullptr), prev(nullptr), succ(nullptr) {}
+            node(Key key, bool color) : key(key), color(color), left(nullptr), right(nullptr), prev(nullptr), succ(nullptr) {}
             ~node() {}
             
         private:
             bool color;
             node *left, *right;
+            node *prev, *succ;
             friend map;
         };
 

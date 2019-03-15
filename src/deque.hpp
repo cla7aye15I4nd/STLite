@@ -1,3 +1,4 @@
+//#pragma GCC optimize(3)
 #ifndef _deque_hpp
 #define _deque_hpp
  
@@ -12,7 +13,7 @@ namespace sjtu{
 #define HEAD s.head->next
 #define TAIL s.tail->prev
 #define END  s.tail
-        static const size_t SIZE = 300;
+        static const size_t SIZE = 200;
         static const size_t BOUND = SIZE * 2;
 	static const size_t LIMIT = SIZE / 2;
  
