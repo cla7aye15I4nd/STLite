@@ -6,14 +6,14 @@
 #include <cstdlib>
 #include <ctime>
 #include <cmath>
-#include "../../../../src/deque.hpp"
-//#include "exceptions.hpp"
+#include "deque.hpp"
+#include "exceptions.hpp"
 
 
 /***************************/
 bool need_to_check_throw = 1;
 bool good_complexity = 1;//if the complexity is N^2, change to 0
-int N = good_complexity ? 300000 : 1000;
+int N = good_complexity ? 50000 : 1000;
 /***************************/
 
 
@@ -276,7 +276,6 @@ void test7(){
 		if(i % 10 <= 9) q.pop_front();
 	}
 	int test_num = 5000000;
-        
 	it_q = q.begin() + q.size() - 10;
 	for(int i = 0; i < test_num; i++)
 	{
@@ -284,7 +283,6 @@ void test7(){
 		tmp = it_q -> num();
 		if(i % (test_num / 10) == 0) it_q = q.begin() + rand() % q.size();
 	}
-        
 	for(int i = 0; i < N; i++){
 		it_q = q.begin() + rand() % q.size();
 		q.insert(it_q, T(rand()));

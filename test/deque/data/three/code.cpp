@@ -86,8 +86,7 @@ bool isEqual(std::deque<Int> &a, sjtu::deque<Int> &b) {
 	resultA.clear();
 	resultB.clear();
 	for (auto x : a) resultA.push_back(x);
-	for (auto x : b)
-            resultB.push_back(x);
+	for (auto x : b) resultB.push_back(x);
 	if (resultA.size() != resultB.size()) return false;
 	for (int i = 0; i < (int)resultA.size(); i++) {
 		if (resultA[i] != resultB[i]) return false;
@@ -203,12 +202,8 @@ std::pair<bool, double> eraseChecker() {
 	timer.init();
 	for (int i = 0; i < N; i++) {
 		int pos = rand() % b.size();
-                if (b.size() == 1) {
-                    --i, ++i;
-                }
 		a.erase(a.begin() + pos);
 		b.erase(b.begin() + pos);
-                //std::cerr << i << ' ';
 	}
 	timer.stop();
 	if (!isEqual(a, b)) {
@@ -673,13 +668,11 @@ std::pair<bool, double> errorIteratorChecker() {
 	} catch(...) {
 		successCounter++;
 	}
-        std::cerr << "#1";
 	try{
 		*--a.begin();
 	} catch(...) {
 		successCounter++;
 	}
-        std::cerr << "#2";
 	try{
 		*++a.end();
 	} catch(...) {
@@ -916,7 +909,6 @@ std::pair<bool, double> synthesisChecker() {
 	if (!isEqual(tA, tB)) {
 		return std::make_pair(false, 0);
 	}
-        
 	tA = ttA; tB = ttB;
 	if (!isEqual(tA, tB)) {
 		return std::make_pair(false, 0);
@@ -936,7 +928,6 @@ std::pair<bool, double> synthesisChecker() {
 		return std::make_pair(false, 0);
 	}
 
-        std::cerr << "#1";
 	const std::deque<Int> cA = a;
 	const sjtu::deque<Int> cB = b;
 
@@ -977,8 +968,6 @@ std::pair<bool, double> synthesisChecker() {
 			return std::make_pair(false, 0);
 		}
 	}
-        std::cerr << "#2";
-	
 	tA = a = a = a;
 	tB = b = b = b;
 	a.clear();
@@ -1050,8 +1039,7 @@ std::pair<bool, double> synthesisChecker() {
 	if (!isEqual(ttA, ttB)) {
 		return std::make_pair(false, 0);
 	}
-        std::cerr << "#3 " << cA.size() << ' ' << cB.size() << '\n';
-	
+
 	auto citA = cA.cbegin();
 	auto citB = cB.cbegin();
 	for (; citA != cA.end(); citA++, citB) {
@@ -1059,7 +1047,7 @@ std::pair<bool, double> synthesisChecker() {
 			return std::make_pair(false, 0);
 		}
 	}
-        std::cerr << "#4";
+
 	ttA.clear();
 	ttB.clear();
 	a.clear();
@@ -1510,7 +1498,6 @@ static CheckerPair TEST_B[] = {
 };
 
 #define __CORRECT_TEST
-#define __SPEED_TEST
 #define __OFFICAL
 
 int main() {
@@ -1526,7 +1513,7 @@ int main() {
 	try{
 		puts("Test Zone A: Correctness Testing...");
 		int n = sizeof(TEST_A) / sizeof(CheckerPair);
-                for (int i = 0; i < n; i++) {
+		for (int i = 0; i < n; i++) {
 			printf("Test %d: %-59s", i + 1, TEST_A[i].first);
 			std::pair<bool, double> result = TEST_A[i].second();
 			if (result.first) {

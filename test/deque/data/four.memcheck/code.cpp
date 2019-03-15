@@ -12,8 +12,8 @@
 
 /***************************/
 bool need_to_check_throw = 1;
-bool good_complexity = 0;//if the complexity is N^2, change to 0
-int N = good_complexity ? 300000 : 1000;
+bool good_complexity = 1;//if the complexity is N^2, change to 0
+int N = good_complexity ? 50000 : 1000;
 /***************************/
 
 
@@ -297,14 +297,14 @@ void test7(){
 	}
 	if(good_complexity){
 		q.clear();
-		for(int i=0;i<4000000;i++)
+		for(int i=0;i<100000;i++)
 			q.push_back(i);
 		while (q.size()>2010){
 			if(rand() % 2) q.pop_front();
 				else q.pop_back();
 		}
 		int tmp;
-		for(int i=0;i<2000000;i++){
+		for(int i=0;i<200000;i++){
 			tmp = q[2000].num();
 			tmp = q[1000].num();
 		}

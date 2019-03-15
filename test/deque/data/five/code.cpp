@@ -7,13 +7,13 @@
 #include <ctime>
 #include <cmath>
 #include "../../../../src/deque.hpp"
-//#include "exceptions.hpp"
+#include "../../../../src/exceptions.hpp"
 
 
 /***************************/
 bool need_to_check_throw = 1;
-bool good_complexity = 0;//if the complexity is N^2, change to 0
-int N = good_complexity ? 300000 : 1000;
+bool good_complexity = 1;//if the complexity is N^2, change to 0
+int N = good_complexity ? 50000 : 1000;
 /***************************/
 
 
@@ -109,22 +109,18 @@ void test3(){
 		if(t2 && *(q.end() - t2) != *(stl.end() - t2)){puts("Wrong Answer");return;}
 		if((q.begin() + t1) - (q.begin() + t2) != (t1 - t2)){puts("Wrong Answer");return;}
 	}
-        
 	if((q.begin() + num) != q.end()) {puts("Wrong Answer");return;}
 	if((q.end() - num) != q.begin()) {puts("Wrong Answer");return;}
 	bool flag=0;
-        
 	sjtu::deque<T> other;
 	try{
 		int t = q.begin() - other.begin();	
 	}catch(...){
 		flag=1;
 	}
-        
 	if(!flag && need_to_check_throw) {puts("Wrong Answer");return;}
 	it_q = q.begin();
 	it_stl = stl.begin();
-        
 	for(int i=1;i<=10;i++){
 		int t = rand() % (num / 10);
 		it_q += t;
@@ -132,7 +128,6 @@ void test3(){
 		if(*it_q != *it_stl) {puts("Wrong Answer");return;}
 		if(it_q -> num() != it_stl -> num()) {puts("Wrong Answer");return;}
 	}
-        
 	it_q = --q.end();
 	it_stl = --stl.end();
 	if(*it_q != *it_stl) {puts("Wrong Answer");return;}
