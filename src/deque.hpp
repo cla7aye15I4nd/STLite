@@ -1,4 +1,4 @@
-//#pragma GCC optimize(3)
+#pragma GCC optimize(3)
 #ifndef _deque_hpp
 #define _deque_hpp
  
@@ -13,7 +13,7 @@ namespace sjtu{
 #define HEAD s.head->next
 #define TAIL s.tail->prev
 #define END  s.tail
-        static const size_t SIZE = 200;
+        static const size_t SIZE = 400;
         static const size_t BOUND = SIZE * 2;
 	static const size_t LIMIT = SIZE / 2;
  
@@ -192,6 +192,7 @@ namespace sjtu{
         using Elem = typename list<_Tp>::Node;
     public:
         deque () : count(0) {
+            srand(300000);
             s.push_back(new list<_Tp> ());
             END->data = new list<_Tp> ();
             END->data->count = 1;
@@ -222,7 +223,7 @@ namespace sjtu{
         class iterator{
         public:
             iterator () {}
-            iterator operator+ (int n) {
+            iterator& operator+ (int n) {
                 if (n < 0) return operator- (-n);
                 int r = rest();
                 if (r >= n) move_back_ptr(n);
@@ -232,7 +233,7 @@ namespace sjtu{
                 }
                 return *this;
             }
-            iterator operator- (int n) {
+            iterator& operator- (int n) {
                 if (n < 0) return operator+ (-n);
                 if (index_ptr() <= n) throw invalid_iterator();
                 int r = index() - 1;
@@ -243,10 +244,10 @@ namespace sjtu{
                 }
                 return *this;
             }
-            iterator operator+= (int n) { return *this = *this + n; }
-            iterator operator-= (int n) { return *this = *this - n; }
-            iterator operator++ () { return operator+ (1); }
-            iterator operator-- () { return operator- (1); }
+            iterator& operator+= (int n) { return *this = *this + n; }
+            iterator& operator-= (int n) { return *this = *this - n; }
+            iterator& operator++ () { return operator+ (1); }
+            iterator& operator-- () { return operator- (1); }
             iterator operator++ (int) {
                 iterator temp = *this;
                 operator++();
@@ -390,11 +391,11 @@ namespace sjtu{
             if (x->data->count >= BOUND) {
                 s.insert(x->next, x->data->split(SIZE));
             }else if (x->prev != s.head || x->next != END) {
-                while (x->next != END && (x->data->count == 0 || x->data->count + x->next->data->count <= BOUND)) {
+                if (x->next != END && (x->data->count == 0 || x->data->count + x->next->data->count <= SIZE)) {
                     x->data->merge(x->next->data);
                     s.erase(x->next);
                 }
-                while (x->prev != s.head && (x->data->count == 0 || x->data->count + x->prev->data->count <= BOUND)) {
+                if (x->prev != s.head && (x->data->count == 0 || x->data->count + x->prev->data->count <= SIZE)) {
                     x = x->prev;
                     x->data->merge(x->next->data);
                     s.erase(x->next);

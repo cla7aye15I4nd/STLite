@@ -12,8 +12,10 @@ namespace sjtu{
     public:
         priority_queue () : root(nullptr), count(0) {}
         priority_queue (const _Tp& elem) : root(node(elem)), count(0) {}
-        priority_queue (const priority_queue& q) : root(nullptr), count(0) { copy(q); }
-        virtual ~priority_queue () { clear(); }
+        priority_queue (const priority_queue& q) : root(nullptr), count(0) { copy_(q.root); }
+        virtual ~priority_queue () {
+            clear();
+        }
         
         priority_queue& operator= (const priority_queue& q) {
             if (this != &q) 
@@ -88,17 +90,6 @@ namespace sjtu{
         }
 
         node* merge_pairs(node* u) {
-            // node* v = u;
-            // u = u->next;
-            // v->next = nullptr;
-            // while (u->next != nullptr) {
-            //     node *a = u->next, *b = a->next;
-            //     u->next = a->next = nullptr;
-            //     v = _merge(v, _merge(u, a));
-            //     u = b;
-            // }
-
-            // return _merge(v, u);
             if (u == nullptr) return nullptr;
             if (u->next == nullptr) return u;
             
@@ -110,8 +101,10 @@ namespace sjtu{
         
         void clear_(node *u) {
             if (u == nullptr) return;
-            for (node *v = u->head; v; v = v->next)
+            for (node *v = u->head, *nv; v; v = nv) {
+                nv = v->next;
                 clear_(v);
+            }
             delete u;
         }
 
